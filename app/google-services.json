@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "540793172323",
+    "firebase_url": "https://qrcoderead-db92d.firebaseio.com",
+    "project_id": "qrcoderead-db92d",
+    "storage_bucket": "qrcoderead-db92d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540793172323:android:c6fcc4a7dcacfc97606356",
+        "android_client_info": {
+          "package_name": "com.example.qrcoderead"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540793172323-pprdfh5gcs8bqv9jij7n831ptbu7oh3t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkzJFSvmXoeWMVUy0HCOVBYn2qp22zAt4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540793172323-pprdfh5gcs8bqv9jij7n831ptbu7oh3t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
