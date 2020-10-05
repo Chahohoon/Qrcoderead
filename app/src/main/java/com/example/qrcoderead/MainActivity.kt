@@ -12,13 +12,19 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.OkHttpClient
+import okhttp3.Response
 
 class MainActivity : AppCompatActivity() {
 
 
     private lateinit var detector: BarcodeDetector
     private lateinit var cameraSource: CameraSource
+
+    var realm : Realm? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +81,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    //realm 초기화
+    fun onInitDataBase(){
+        Realm.init(this)
+        var config = RealmConfiguration.Builder().name("myrealm.realm").build()
+        Realm.setDefaultConfiguration(config)
+
+
+        realm = Realm.getDefaultInstance()
+    }
+
+    //카메라 권한 퍼미션 체크
     @SuppressLint("MissingPermission")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -86,6 +103,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "스캐너는 카메라 권한이 허용되어야 사용 가능합니다.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    fun apicheck() {
+        val okHttpClient = OkHttpClient
+        val url =""
+        val request = ""
+
     }
 
     override fun onDestroy() {
