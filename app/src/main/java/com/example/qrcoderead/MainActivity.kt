@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraSource: CameraSource
 
     var realm : Realm? = null
+    var userdata = UserDataClass()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +48,9 @@ class MainActivity : AppCompatActivity() {
                         Stringresult.append("\n")
                         Stringresult.append(barcodes.valueAt(0).displayValue)
                         resultext.text = Stringresult.toString()
+
+                        userdata.readvalue = Stringresult.toString()
+
                     }
                 }
             }
@@ -86,10 +90,9 @@ class MainActivity : AppCompatActivity() {
         Realm.init(this)
         var config = RealmConfiguration.Builder().name("myrealm.realm").build()
         Realm.setDefaultConfiguration(config)
-
-
         realm = Realm.getDefaultInstance()
     }
+
 
     //카메라 권한 퍼미션 체크
     @SuppressLint("MissingPermission")
