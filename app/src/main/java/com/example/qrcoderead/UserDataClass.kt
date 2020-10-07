@@ -11,5 +11,6 @@ class UserDataClass {
     var readvalue = ""
     var database : FirebaseDatabase? = FirebaseDatabase.getInstance()
     var dref : DatabaseReference? = database?.getReference()
+    var userlist = mutableListOf<String>()
 
 }

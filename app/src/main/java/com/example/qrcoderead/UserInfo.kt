@@ -6,40 +6,45 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.userinfo.*
 
 class UserInfo : AppCompatActivity() {
 
     var userdata = UserDataClass()
+    var realm : Realm? = null
     var toast : Toast? = null
-    var username = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.userinfo)
 
-        checkUserdata()
         setUserData()
+        onInitDataBase()
 
         btn_save.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             if(ed_name.text.toString().equals("") && ed_number.text.toString().equals("") ) {
                 toast = Toast.makeText(this,"정보를 입력해 주세요",Toast.LENGTH_SHORT)
                 toast?.show()
-            }else if (username.equals(userdata.curName)) {
-                startActivity(intent)
-                finish()
             }else {
-                setUserinfo()
+                setUserinfo(userdata.curName,userdata.curNumber)
                 startActivity(intent)
                 finish()
             }
         }
     }
 
+    //realm 초기화
+    fun onInitDataBase(){
+        Realm.init(this)
+        var config = RealmConfiguration.Builder().name("myrealm.realm").build()
+        Realm.setDefaultConfiguration(config)
+        realm = Realm.getDefaultInstance()
+    }
+
+    //edittext 처리
     fun setUserData() {
 
         ed_name.addTextChangedListener(object : TextWatcher {
@@ -79,24 +84,23 @@ class UserInfo : AppCompatActivity() {
 
     }
 
-    fun setUserinfo() {
+    
+    
+    //Firebase, realm Database 처리
+    fun setUserinfo(name : String, number : String) {
         var curUserdata = mutableMapOf<String,String>()
         curUserdata.put("UserName",userdata.curName)
         curUserdata.put("UserNumber",userdata.curNumber)
         userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
-    }
 
-    fun checkUserdata() {
-        userdata.database?.reference?.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
+        realm?.executeTransaction {
+            var check = realm?.where(UserDataLoad::class.java)?.equalTo("name",name)?.findFirst()
+            if(check == null) {
+                var temp = it.createObject(UserDataLoad::class.java)
+                temp.setData(name,number)
+                System.out.println(temp)
             }
+        }
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (snapshot in snapshot.children) {
-                    username = snapshot.key.toString()
-                }
-
-                }
-        })
     }
 }
