@@ -41,22 +41,22 @@ class Splash : AppCompatActivity() {
     }
 
 
-    //fierbase 데이터 받아오는곳 
+    //fierbase 데이터 받아오는곳
     fun checkUserdata() {
         val intentMain = Intent(this@Splash, MainActivity::class.java)
         val intentUserInfo = Intent(this@Splash, UserInfo::class.java)
         val check :RealmResults<UserDataLoadClass>? = realm?.where(UserDataLoadClass::class.java)?.findAll()
 
+
         userdata.database = FirebaseDatabase.getInstance()
 
         userdata.database?.getReference(userdata.curName)?.addListenerForSingleValueEvent(object : ValueEventListener {
-            var username = ""
             override fun onCancelled(error: DatabaseError) {
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (snapshot in snapshot.children) {
-                    username = snapshot.key.toString()
+                    var username = snapshot.key.toString()
                     userdata.userlist.add(username)
                 }
 

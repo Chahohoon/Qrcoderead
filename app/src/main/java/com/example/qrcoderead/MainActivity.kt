@@ -15,6 +15,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.userdialog.*
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
@@ -30,32 +31,37 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        ReadQrcode()
+
+    }
+
+    //realm 초기화
+    fun onInitDataBase(){
+        Realm.init(this)
+        var config = RealmConfiguration.Builder().name("myrealm.realm").build()
+        Realm.setDefaultConfiguration(config)
+        realm = Realm.getDefaultInstance()
+    }
 
 
+    //카메라 권한 퍼미션 체크
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if(requestCode == 200){
+            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                cameraSource.start(qr_barcode.holder)
+            } else {
+                Toast.makeText(this, "스캐너는 카메라 권한이 허용되어야 사용 가능합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun ReadQrcode() {
         detector = BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.ALL_FORMATS).build()
-        detector.setProcessor(object : Detector.Processor<Barcode> {
-            override fun release() {
-            }
-
-
-            //결과 디스플레이
-            override fun receiveDetections(p0: Detector.Detections<Barcode>?) {
-                var barcodes = p0?.detectedItems
-                if (barcodes!!.size() > 0) {
-                    val Stringresult = StringBuilder()
-                    resultext.post {
-                        Stringresult.append("결과 :")
-                        Stringresult.append("\n")
-                        Stringresult.append(barcodes.valueAt(0).displayValue)
-                        resultext.text = Stringresult.toString()
-
-                        userdata.readvalue = Stringresult.toString()
-
-                    }
-                }
-            }
-        })
-
+        
+        //카메라 설정
         cameraSource = CameraSource.Builder(this,detector).setRequestedPreviewSize(1024,768)
             .setRequestedFps(25f).setAutoFocusEnabled(true).build()
 
@@ -83,29 +89,27 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-    }
-
-    //realm 초기화
-    fun onInitDataBase(){
-        Realm.init(this)
-        var config = RealmConfiguration.Builder().name("myrealm.realm").build()
-        Realm.setDefaultConfiguration(config)
-        realm = Realm.getDefaultInstance()
-    }
-
-
-    //카메라 권한 퍼미션 체크
-    @SuppressLint("MissingPermission")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if(requestCode == 200){
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                cameraSource.start(qr_barcode.holder)
-            } else {
-                Toast.makeText(this, "스캐너는 카메라 권한이 허용되어야 사용 가능합니다.", Toast.LENGTH_SHORT).show()
+        //결과 디스플레이
+        detector.setProcessor(object : Detector.Processor<Barcode> {
+            override fun release() {
             }
-        }
+
+            override fun receiveDetections(p0: Detector.Detections<Barcode>?) {
+                var barcodes = p0?.detectedItems
+                if (barcodes!!.size() > 0) {
+                    val Stringresult = StringBuilder()
+                    //결과값 출력
+                    resultext.post {
+                        Stringresult.append("결과 :")
+                        Stringresult.append("\n")
+                        Stringresult.append(barcodes.valueAt(0).displayValue)
+                        resultext.text = Stringresult.toString()
+                        userdata.readvalue = Stringresult.toString()
+
+                    }
+                }
+            }
+        })
     }
 
     fun apicheck() {
@@ -115,10 +119,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun memocheck() {
+        val dig = UserDialog(this)
+        System.out.println(userdata.readvalue)
+        dig.start("현재 위치에 대한 메모를 남기시겠습니까?")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         detector.release()
         cameraSource.stop()
         cameraSource.release()
     }
+
+
 }
+
