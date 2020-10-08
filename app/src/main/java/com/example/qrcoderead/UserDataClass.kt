@@ -9,8 +9,8 @@ class UserDataClass {
     var curNumber  = ""
     var curMemo  = ""
     var readvalue = ""
-    var database : FirebaseDatabase? = FirebaseDatabase.getInstance()
-    var dref : DatabaseReference? = database?.getReference()
+    var database : FirebaseDatabase? = null
+    var dref : DatabaseReference? =  null
     var userlist = mutableListOf<String>()
 
 }

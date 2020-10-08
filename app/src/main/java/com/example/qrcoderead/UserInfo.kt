@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.database.FirebaseDatabase
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.userinfo.*
@@ -94,9 +95,9 @@ class UserInfo : AppCompatActivity() {
         userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
 
         realm?.executeTransaction {
-            var check = realm?.where(UserDataLoad::class.java)?.equalTo("name",name)?.findFirst()
+            var check = realm?.where(UserDataLoadClass::class.java)?.equalTo("name",name)?.findFirst()
             if(check == null) {
-                var temp = it.createObject(UserDataLoad::class.java)
+                var temp = it.createObject(UserDataLoadClass::class.java)
                 temp.setData(name,number)
                 System.out.println(temp)
             }

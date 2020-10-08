@@ -3,7 +3,7 @@ package com.example.qrcoderead
 import io.realm.RealmObject
 
 
-open class UserDataLoad : RealmObject() {
+open class UserDataLoadClass : RealmObject() {
     private var name : String? = null
     private var number : String? = null
 //    private var usermemo : String? = null

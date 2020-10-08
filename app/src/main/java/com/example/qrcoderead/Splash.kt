@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -21,7 +22,7 @@ import java.util.ArrayList
 class Splash : AppCompatActivity() {
 
     var userdata = UserDataClass()
-    var userload = UserDataLoad()
+    var userload = UserDataLoadClass()
     var realm : Realm? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,11 +40,16 @@ class Splash : AppCompatActivity() {
         realm = Realm.getDefaultInstance()
     }
 
+
+    //fierbase 데이터 받아오는곳 
     fun checkUserdata() {
         val intentMain = Intent(this@Splash, MainActivity::class.java)
         val intentUserInfo = Intent(this@Splash, UserInfo::class.java)
-        val check :RealmResults<UserDataLoad>? = realm?.where(UserDataLoad::class.java)?.findAll()
-        userdata.database?.reference?.addListenerForSingleValueEvent(object : ValueEventListener {
+        val check :RealmResults<UserDataLoadClass>? = realm?.where(UserDataLoadClass::class.java)?.findAll()
+
+        userdata.database = FirebaseDatabase.getInstance()
+
+        userdata.database?.getReference(userdata.curName)?.addListenerForSingleValueEvent(object : ValueEventListener {
             var username = ""
             override fun onCancelled(error: DatabaseError) {
             }
