@@ -24,6 +24,7 @@ class Splash : AppCompatActivity() {
     var userdata = UserDataClass()
     var userload = UserDataLoadClass()
     var realm : Realm? = null
+    private var usercheck = listOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,35 +42,58 @@ class Splash : AppCompatActivity() {
     }
 
 
-    //fierbase 데이터 받아오는곳
+    //fierbase date read
     fun checkUserdata() {
-        val intentMain = Intent(this@Splash, MainActivity::class.java)
-        val intentUserInfo = Intent(this@Splash, UserInfo::class.java)
-        val check :RealmResults<UserDataLoadClass>? = realm?.where(UserDataLoadClass::class.java)?.findAll()
+        val check = realm?.where(UserDataLoadClass::class.java)?.findAll()
+        var usdatabase = userdata.database
+        usdatabase = FirebaseDatabase.getInstance()
 
-
-        userdata.database = FirebaseDatabase.getInstance()
-
-        userdata.database?.getReference(userdata.curName)?.addListenerForSingleValueEvent(object : ValueEventListener {
+        usdatabase?.reference?.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (snapshot in snapshot.children) {
                     var username = snapshot.key.toString()
+                    //firebase에 저장된 key값을 담는 배열
                     userdata.userlist.add(username)
+                    Log.d("realm 저장완료4", userdata.userlist.toString())
                 }
 
             }
         })
+        Log.d("체크엔 뭐가있냐 ", check.toString())
+        getUserData()
+    }
 
-        System.out.println(check)
-        if(!userdata.userlist.equals(check)) {
-            startActivity(intentMain)
-            finish()
-        } else {
+    fun getUserData() {
+        val intentMain = Intent(this@Splash, MainActivity::class.java)
+        val intentUserInfo = Intent(this@Splash, UserInfo::class.java)
+        var userretry = listOf<String>()
+        realm?.executeTransaction {
+            val check = realm?.where(UserDataLoadClass::class.java)?.findAll()
+            check?.let {
+
+                for (i in it) {
+                    UserDataLoadClass()?.let {
+                        i.isName()
+                        i.isnumber()
+                    }
+                    userretry = listOf(i.toString())
+                    Log.d("내부DE 읽음", i.toString())
+                }
+            }
+        }
+        //realm 저장은 되나
+        Log.d("c체크1", userretry.toString())
+        Log.d("체크2", usercheck.toString())
+        if (userretry.size == 0  ) {
             startActivity(intentUserInfo)
             finish()
+        } else {
+                startActivity(intentMain)
+                finish()
+                //비어있으면
         }
     }
 }

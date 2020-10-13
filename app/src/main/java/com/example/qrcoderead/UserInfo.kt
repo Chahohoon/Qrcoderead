@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -21,8 +23,8 @@ class UserInfo : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.userinfo)
 
-        setUserData()
         onInitDataBase()
+        setUserData()
 
         btn_save.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -89,17 +91,19 @@ class UserInfo : AppCompatActivity() {
     
     //Firebase, realm Database 처리
     fun setUserinfo(name : String, number : String) {
+        var derf = userdata.dref
         var curUserdata = mutableMapOf<String,String>()
         curUserdata.put("UserName",userdata.curName)
         curUserdata.put("UserNumber",userdata.curNumber)
-        userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
+        derf?.child(userdata.curName)?.setValue(curUserdata)
+        Log.d("파이어베이스 저장완료", curUserdata.toString())
 
         realm?.executeTransaction {
-            var check = realm?.where(UserDataLoadClass::class.java)?.equalTo("name",name)?.findFirst()
+            val check = realm?.where(UserDataLoadClass::class.java)?.equalTo("name",name)?.findFirst()
             if(check == null) {
-                var temp = it.createObject(UserDataLoadClass::class.java)
+                val temp = it.createObject(UserDataLoadClass::class.java)
                 temp.setData(name,number)
-                System.out.println(temp)
+                Log.d("realm 저장완료", temp.toString())
             }
         }
 

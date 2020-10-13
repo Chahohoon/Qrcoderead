@@ -14,11 +14,6 @@ open class UserDataLoadClass : RealmObject() {
 //        this.usermemo = usermemo
     }
 
-    fun getData(name : String, number : String) {
-        this.name = name
-        this.number = number
-    }
-
     fun isName() : String {
         return this.name ?: ""
     }

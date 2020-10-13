@@ -37,6 +37,4 @@ class UserDialog(context: Context) {
         dig.show()
     }
 
-    fun datatest(data : String) {
-    }
 }
