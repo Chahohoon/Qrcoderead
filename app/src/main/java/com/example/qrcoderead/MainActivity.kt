@@ -36,11 +36,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         ReadQrcode()
-
-        if(userdata.readvalue != ("")) {
-            memocheck(userdata.readvalue)
-        }
-
     }
 
     //realm 초기화
@@ -67,67 +62,73 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun ReadQrcode() {
-        //바코드 설정
-        val options = FirebaseVisionBarcodeDetectorOptions.Builder()
-            .setBarcodeFormats(
-                FirebaseVisionBarcode.FORMAT_QR_CODE
-            ).build()
+//        //바코드 설정
+//        val options = FirebaseVisionBarcodeDetectorOptions.Builder()
+//            .setBarcodeFormats(
+//                FirebaseVisionBarcode.FORMAT_QR_CODE
+//            ).build()
 
-        
+        //결과 디스플레이
+        detector = BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build()
+        detector.setProcessor(object : Detector.Processor<Barcode> {
+            override fun release() {
+            }
+
+            override fun receiveDetections(p0: Detector.Detections<Barcode>?) {
+                var barcodes = p0?.detectedItems
+                if (barcodes!!.size() > 0) {
+                    val Stringresult = StringBuilder()
+                    //결과값 출력
+                    resultext.post {
+                        Stringresult.append("결과 :")
+                        Stringresult.append("\n")
+                        Stringresult.append(barcodes.valueAt(0).displayValue)
+                        resultext.text = Stringresult.toString()
+                        userdata.readvalue = Stringresult.toString()
+
+                        detector.release()
+                        cameraSource.stop()
+
+                        var curUserdata = mutableMapOf<String,String>()
+                        curUserdata.put("Qrcode",userdata.readvalue)
+                        userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
+
+                        if(userdata.readvalue != "") {
+                            memocheck()
+                        }
+
+                    }
+                }
+            }
+        })
 
         //카메라 설정
-//        cameraSource = CameraSource.Builder(this,detector).setRequestedPreviewSize(1024,768)
-//            .setRequestedFps(25f).setAutoFocusEnabled(true).build()
-//
-//        qr_barcode.holder.addCallback(object : SurfaceHolder.Callback2 {
-//            override fun surfaceRedrawNeeded(p0: SurfaceHolder) {
-//
-//            }
-//
-//            override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
-//
-//            }
-//
-//
-//            override fun surfaceDestroyed(p0: SurfaceHolder) {
-//                cameraSource.stop()
-//            }
-//
-//            override fun surfaceCreated(p0: SurfaceHolder) {
-//                if(ContextCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
-//                    cameraSource.start(p0)
-//                } else {
-//                    ActivityCompat.requestPermissions(this@MainActivity, arrayOf(android.Manifest.permission.CAMERA), 200)
-//                }
-//            }
-//
-//        })
-//
-//        //결과 디스플레이
-//        detector.setProcessor(object : Detector.Processor<Barcode> {
-//            override fun release() {
-//            }
-//
-//            override fun receiveDetections(p0: Detector.Detections<Barcode>?) {
-//                var barcodes = p0?.detectedItems
-//                if (barcodes!!.size() > 0) {
-//                    val Stringresult = StringBuilder()
-//                    //결과값 출력
-//                    resultext.post {
-//                        Stringresult.append("결과 :")
-//                        Stringresult.append("\n")
-//                        Stringresult.append(barcodes.valueAt(0).displayValue)
-//                        resultext.text = Stringresult.toString()
-//                        userdata.readvalue = Stringresult.toString()
-//
-////                        var curUserdata = mutableMapOf<String,String>()
-////                        curUserdata.put("Qrcode",userdata.readvalue)
-////                        userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
-//                    }
-//                }
-//            }
-//        })
+        cameraSource = CameraSource.Builder(this,detector).setRequestedPreviewSize(1024,768)
+            .setRequestedFps(25f).setAutoFocusEnabled(true).build()
 
+        qr_barcode.holder.addCallback(object : SurfaceHolder.Callback2 {
+            override fun surfaceRedrawNeeded(p0: SurfaceHolder) {
+
+            }
+
+            override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+
+            override fun surfaceDestroyed(p0: SurfaceHolder) {
+                cameraSource.stop()
+            }
+
+            override fun surfaceCreated(p0: SurfaceHolder) {
+                if(ContextCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+                    cameraSource.start(p0)
+                } else {
+                    ActivityCompat.requestPermissions(this@MainActivity, arrayOf(android.Manifest.permission.CAMERA), 200)
+                }
+            }
+
+        })
 
     }
 
@@ -138,18 +139,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun memocheck(readvalue : String) {
+    fun memocheck() {
         val dig = UserDialog(this)
-
-        if(readvalue != "")
             dig.start("현재 위치에 대한 메모를 남기시겠습니까?")
     }
 
+    
+    //activity가 화면에서 사라질때
     override fun onDestroy() {
         super.onDestroy()
         detector.release()
-        cameraSource.stop()
-        cameraSource.release()
+        cameraSource.stop() // 카메라를 닫고 프레임을 기본 프레임 감지기로 보내는 것을 중지합니다.
+        cameraSource.release() // 카메라를 중지하고 카메라 및 기본 감지기의 리소스를 해제합니다
     }
 
 

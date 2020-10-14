@@ -26,11 +26,17 @@ class UserDialog(context: Context) {
 
         btnOK = dig.findViewById(R.id.ok)
         btnOK.setOnClickListener{
+
             dig.dismiss() //다이얼로그 종료 메소드
         }
 
         btnCancel = dig.findViewById(R.id.cancel)
         btnCancel.setOnClickListener{
+
+            var curUserdata = mutableMapOf<String,String>()
+            curUserdata.put("Qrcode",userdata.readvalue)
+            userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
+
             dig.dismiss() //다이얼로그 종료 메소드
         }
 
