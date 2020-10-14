@@ -1,17 +1,12 @@
 package com.example.qrcoderead
 
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.IgnoreExtraProperties
 
-
- class UserDataClass {
-    var curName = ""
-    var curNumber  = ""
-    var curMemo  = ""
-    var readvalue = ""
-    var database : FirebaseDatabase? = null
-    var dref : DatabaseReference? =  null
-    var userlist = mutableListOf<String>()
-    var userlistrealm =  mutableListOf<String>()
-
-}
+@IgnoreExtraProperties
+ data class UserDataClass(
+    var curName: String = "",
+    var curNumber: String  = "",
+    var curMemo: String = "",
+    var readvalue: String = ""
+)

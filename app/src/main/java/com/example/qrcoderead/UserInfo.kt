@@ -7,8 +7,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.userinfo.*
@@ -32,7 +30,7 @@ class UserInfo : AppCompatActivity() {
                 toast = Toast.makeText(this,"정보를 입력해 주세요",Toast.LENGTH_SHORT)
                 toast?.show()
             }else {
-                setUserinfo(userdata.curName,userdata.curNumber)
+                setUserinfo( userdata.curName, userdata.curNumber)
                 startActivity(intent)
                 finish()
             }
@@ -89,19 +87,19 @@ class UserInfo : AppCompatActivity() {
 
     
     
-    //Firebase, realm Database 처리
+    //Firebase, realm Database Write
     fun setUserinfo(name : String, number : String) {
-        var derf = userdata.dref
-        var curUserdata = mutableMapOf<String,String>()
-        curUserdata.put("UserName",userdata.curName)
-        curUserdata.put("UserNumber",userdata.curNumber)
-        derf?.child(userdata.curName)?.setValue(curUserdata)
-        Log.d("파이어베이스 저장완료", curUserdata.toString())
+//        var derf = userdata.dref
+//        var curUserdata = mutableMapOf<String,String>()
+//        curUserdata.put("UserName",userdata.curName)
+//        curUserdata.put("UserNumber",userdata.curNumber)
+//        derf?.child(userdata.curName)?.setValue(curUserdata)
+//        Log.d("파이어베이스 저장완료", curUserdata.toString())
 
         realm?.executeTransaction {
-            val check = realm?.where(UserDataLoadClass::class.java)?.equalTo("name",name)?.findFirst()
-            if(check == null) {
-                val temp = it.createObject(UserDataLoadClass::class.java)
+            var namecheck = realm?.where(UserDataLoadClass::class.java)?.equalTo("name",name)?.findFirst()
+            if(namecheck == null) {
+                var temp = it.createObject(UserDataLoadClass::class.java)
                 temp.setData(name,number)
                 Log.d("realm 저장완료", temp.toString())
             }

@@ -5,13 +5,12 @@ import android.content.Context
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 
 
 class UserDialog(context: Context) {
     var dig = Dialog(context)
     var userdata = UserDataClass()
+    var activity : MainActivity = MainActivity()
     private lateinit var usermemo : TextView
     private lateinit var btnOK : Button
     private lateinit var btnCancel : Button
@@ -26,17 +25,12 @@ class UserDialog(context: Context) {
 
         btnOK = dig.findViewById(R.id.ok)
         btnOK.setOnClickListener{
-
             dig.dismiss() //다이얼로그 종료 메소드
         }
 
         btnCancel = dig.findViewById(R.id.cancel)
         btnCancel.setOnClickListener{
-
-            var curUserdata = mutableMapOf<String,String>()
-            curUserdata.put("Qrcode",userdata.readvalue)
-            userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
-
+            userdata.curMemo = "방문"
             dig.dismiss() //다이얼로그 종료 메소드
         }
 

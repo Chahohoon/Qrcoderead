@@ -4,8 +4,8 @@ import io.realm.RealmObject
 
 
 open class UserDataLoadClass : RealmObject() {
-    private var name : String? = null
-    private var number : String? = null
+    private var name : String? = ""
+    private var number : String? = ""
 //    private var usermemo : String? = null
 
     fun setData(name : String, number : String){

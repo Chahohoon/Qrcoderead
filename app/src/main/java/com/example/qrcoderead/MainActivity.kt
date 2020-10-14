@@ -12,14 +12,11 @@ import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
+import com.google.firebase.database.FirebaseDatabase
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.userdialog.*
 import okhttp3.OkHttpClient
-import okhttp3.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,7 +26,6 @@ class MainActivity : AppCompatActivity() {
 
     var realm : Realm? = null
     var userdata = UserDataClass()
-    var QRcodereading = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,12 +58,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun ReadQrcode() {
-//        //바코드 설정
-//        val options = FirebaseVisionBarcodeDetectorOptions.Builder()
-//            .setBarcodeFormats(
-//                FirebaseVisionBarcode.FORMAT_QR_CODE
-//            ).build()
-
         //결과 디스플레이
         detector = BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build()
         detector.setProcessor(object : Detector.Processor<Barcode> {
@@ -89,12 +79,9 @@ class MainActivity : AppCompatActivity() {
                         detector.release()
                         cameraSource.stop()
 
-                        var curUserdata = mutableMapOf<String,String>()
-                        curUserdata.put("Qrcode",userdata.readvalue)
-                        userdata.dref?.child(userdata.curName)?.setValue(curUserdata)
-
                         if(userdata.readvalue != "") {
                             memocheck()
+                            FirebaseDataWrite()
                         }
 
                     }
@@ -141,7 +128,14 @@ class MainActivity : AppCompatActivity() {
 
     fun memocheck() {
         val dig = UserDialog(this)
-            dig.start("현재 위치에 대한 메모를 남기시겠습니까?")
+            dig.start("현재 장소에 대한 메모를 남기시겠습니까?")
+    }
+
+    fun FirebaseDataWrite() {
+
+        // 파이어 베이스 저장
+        FirebaseDatabase.getInstance().reference.child(userdata.curName).setValue(userdata)
+
     }
 
     
