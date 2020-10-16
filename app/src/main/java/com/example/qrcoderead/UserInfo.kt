@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.userinfo.*
 class UserInfo : AppCompatActivity() {
 
     var userdata = UserDataClass()
+    var userdataload = UserDataLoadClass()
     var realm : Realm? = null
     var toast : Toast? = null
 
@@ -31,6 +32,8 @@ class UserInfo : AppCompatActivity() {
                 toast?.show()
             }else {
                 setUserinfo( userdata.curName, userdata.curNumber)
+                intent.putExtra("Name",userdata.curName)
+                intent.putExtra("Number",userdata.curNumber)
                 startActivity(intent)
                 finish()
             }
@@ -72,12 +75,12 @@ class UserInfo : AppCompatActivity() {
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                ed_name.setBackgroundResource(R.drawable.background_edittext)
+                ed_number.setBackgroundResource(R.drawable.background_edittext)
                 userdata.curNumber = p0.toString()
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                ed_name.setBackgroundResource(R.drawable.error_edittext)
+                ed_number.setBackgroundResource(R.drawable.error_edittext)
             }
 
         })
@@ -89,12 +92,6 @@ class UserInfo : AppCompatActivity() {
     
     //Firebase, realm Database Write
     fun setUserinfo(name : String, number : String) {
-//        var derf = userdata.dref
-//        var curUserdata = mutableMapOf<String,String>()
-//        curUserdata.put("UserName",userdata.curName)
-//        curUserdata.put("UserNumber",userdata.curNumber)
-//        derf?.child(userdata.curName)?.setValue(curUserdata)
-//        Log.d("파이어베이스 저장완료", curUserdata.toString())
 
         realm?.executeTransaction {
             var namecheck = realm?.where(UserDataLoadClass::class.java)?.equalTo("name",name)?.findFirst()
@@ -104,6 +101,5 @@ class UserInfo : AppCompatActivity() {
                 Log.d("realm 저장완료", temp.toString())
             }
         }
-
     }
 }

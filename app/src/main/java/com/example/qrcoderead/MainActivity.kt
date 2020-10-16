@@ -1,11 +1,13 @@
 package com.example.qrcoderead
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.SurfaceHolder
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.vision.CameraSource
@@ -26,11 +28,14 @@ class MainActivity : AppCompatActivity() {
 
     var realm : Realm? = null
     var userdata = UserDataClass()
+    var userdataload = UserDataLoadClass()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        onInitDataBase()
         ReadQrcode()
     }
 
@@ -40,12 +45,28 @@ class MainActivity : AppCompatActivity() {
         var config = RealmConfiguration.Builder().name("myrealm.realm").build()
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
+
+        realm?.executeTransaction {
+            var datas = realm?.where(UserDataLoadClass::class.java)?.findAll()
+            var copydatas = realm?.copyToRealm(datas)
+            datas?.let{
+                for (i in it){
+                    userdata.curName = i.isName()
+                    userdata.curNumber = i.isnumber()
+                    userdata.curMemo = i.isusermemo()
+                }
+            }
+        }
     }
 
 
     //카메라 권한 퍼미션 체크
     @SuppressLint("MissingPermission")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if(requestCode == 200){
@@ -59,6 +80,7 @@ class MainActivity : AppCompatActivity() {
 
     fun ReadQrcode() {
         //결과 디스플레이
+        Log.d("메인시작", userdata.curName)
         detector = BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build()
         detector.setProcessor(object : Detector.Processor<Barcode> {
             override fun release() {
@@ -79,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                         detector.release()
                         cameraSource.stop()
 
-                        if(userdata.readvalue != "") {
+                        if (userdata.readvalue != "") {
                             memocheck()
                             FirebaseDataWrite()
                         }
@@ -90,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         //카메라 설정
-        cameraSource = CameraSource.Builder(this,detector).setRequestedPreviewSize(1024,768)
+        cameraSource = CameraSource.Builder(this, detector).setRequestedPreviewSize(1024, 768)
             .setRequestedFps(25f).setAutoFocusEnabled(true).build()
 
         qr_barcode.holder.addCallback(object : SurfaceHolder.Callback2 {
@@ -108,10 +130,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun surfaceCreated(p0: SurfaceHolder) {
-                if(ContextCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+                if (ContextCompat.checkSelfPermission(
+                        this@MainActivity,
+                        android.Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
                     cameraSource.start(p0)
                 } else {
-                    ActivityCompat.requestPermissions(this@MainActivity, arrayOf(android.Manifest.permission.CAMERA), 200)
+                    ActivityCompat.requestPermissions(
+                        this@MainActivity,
+                        arrayOf(android.Manifest.permission.CAMERA),
+                        200
+                    )
                 }
             }
 
@@ -132,7 +162,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun FirebaseDataWrite() {
-
         // 파이어 베이스 저장
         FirebaseDatabase.getInstance().reference.child(userdata.curName).setValue(userdata)
 

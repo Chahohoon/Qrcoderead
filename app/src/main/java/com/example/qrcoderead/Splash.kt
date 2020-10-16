@@ -38,15 +38,13 @@ class Splash : AppCompatActivity() {
         val localdb = realm?.where(UserDataLoadClass::class.java)?.findAll()
 
         //초기값 0 , 값이 들어오면 1
-        if (localdb?.size != 0){
+        if (localdb?.size == 0){
             startActivity(intentUserInfo)
             finish()
         } else {
             startActivity(intentMain)
             finish()
         }
-        System.out.println(userload.isnumber())
-        System.out.println(userdata.curNumber)
 
 
 
