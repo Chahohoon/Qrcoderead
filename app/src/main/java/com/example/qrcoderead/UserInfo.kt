@@ -27,6 +27,7 @@ class UserInfo : AppCompatActivity() {
 
         btn_save.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
+
             if(ed_name.text.toString().equals("") && ed_number.text.toString().equals("") ) {
                 toast = Toast.makeText(this,"정보를 입력해 주세요",Toast.LENGTH_SHORT)
                 toast?.show()

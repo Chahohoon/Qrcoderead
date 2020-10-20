@@ -31,12 +31,11 @@ class Splash : AppCompatActivity() {
 
 
     fun checkUserdata() {
-        val intentMain = Intent(this@Splash, MainActivity::class.java)
-        val intentUserInfo = Intent(this@Splash, UserInfo::class.java)
+        val intentMain = Intent(this, MainActivity::class.java)
+        val intentUserInfo = Intent(this, UserInfo::class.java)
 
         // 내부 디비가 존재하지 않으면 신규 작성?
         val localdb = realm?.where(UserDataLoadClass::class.java)?.findAll()
-
         //초기값 0 , 값이 들어오면 1
         if (localdb?.size == 0){
             startActivity(intentUserInfo)
