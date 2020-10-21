@@ -35,9 +35,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val intentMain = Intent(this, ScannerActivity::class.java)
         onInitDataBase()
-//        ReadQrcode()
 
         btn_qrcode.setOnClickListener {
             ReadQrcode()
@@ -59,7 +57,6 @@ class MainActivity : AppCompatActivity() {
     fun onReadDataBase() {
         realm?.executeTransaction {
             var datas = realm?.where(UserDataLoadClass::class.java)?.findAll()
-            var copydatas = realm?.copyToRealm(datas)
             datas?.let{
                 for (i in it){
                     userdata.curName = i.isName()
@@ -71,76 +68,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun ReadQrcode() {
-//        //결과 디스플레이
-//        detector = BarcodeDetector.Builder(this).setBarcodeFormats(Barcode.QR_CODE).build()
-//        detector.setProcessor(object : Detector.Processor<Barcode> {
-//            override fun release() {
-//            }
-//
-//            override fun receiveDetections(p0: Detector.Detections<Barcode>?) {
-//                var barcodes = p0?.detectedItems
-//                if (barcodes!!.size() > 0) {
-//                    val Stringresult = StringBuilder()
-//                    //결과값 출력
-//                    resultext.post {
-//                        Stringresult.append("결과 :")
-//                        Stringresult.append("\n")
-//                        Stringresult.append(barcodes.valueAt(0).displayValue)
-//                        resultext.text = Stringresult.toString()
-//                        userdata.readvalue = Stringresult.toString()
-//
-//                        detector.release()
-//                        cameraSource.stop()
-//
-//                        if (userdata.readvalue != "") {
-////                            memocheck()
-//                            FirebaseDataWrite()
-//                        }
-//
-//                    }
-//                }
-//            }
-//        })
-//
-//        //카메라 설정
-//        cameraSource = CameraSource.Builder(this, detector).setRequestedPreviewSize(1024, 768)
-//            .setRequestedFps(25f).setAutoFocusEnabled(true).build()
-//
-//        qr_barcode.holder.addCallback(object : SurfaceHolder.Callback2 {
-//            override fun surfaceRedrawNeeded(p0: SurfaceHolder) {
-//
-//            }
-//
-//            override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
-//
-//            }
-//
-//
-//            override fun surfaceDestroyed(p0: SurfaceHolder) {
-//                cameraSource.stop()
-//            }
-//
-//            override fun surfaceCreated(p0: SurfaceHolder) {
-//                if (ContextCompat.checkSelfPermission(
-//                        this@MainActivity,
-//                        android.Manifest.permission.CAMERA
-//                    ) == PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    cameraSource.start(p0)
-//                } else {
-//                    ActivityCompat.requestPermissions(
-//                        this@MainActivity,
-//                        arrayOf(android.Manifest.permission.CAMERA),
-//                        200
-//                    )
-//                }
-//            }
-//
-//        })
-//
-    integrator.setCaptureActivity(ScannerActivity::class.java)
-    integrator.setBeepEnabled(true) //인식 시 "삑" 소리 남
-    integrator.initiateScan()
+        integrator.setCaptureActivity(ScannerActivity::class.java)
+        integrator.setBeepEnabled(true) //인식 시 "삑" 소리 남
+        integrator.initiateScan()
     }
 
 
@@ -152,6 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun FirebaseDataWrite() {
+        //realm 데이터 불러오기
         onReadDataBase()
         // 파이어 베이스 저장
         FirebaseDatabase.getInstance().reference.child(userdata.curName).setValue(userdata)
@@ -163,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null) {
             if (result.contents == null) {
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "한번 더 누르면 종료됩니다.", Toast.LENGTH_LONG).show()
             } else {
 //                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
                 userdata.readvalue = result.contents
@@ -173,13 +104,7 @@ class MainActivity : AppCompatActivity() {
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
-
     
-    //activity가 화면에서 사라질때
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     //카메라 권한 퍼미션 체크
     override fun onRequestPermissionsResult(
         requestCode: Int,
