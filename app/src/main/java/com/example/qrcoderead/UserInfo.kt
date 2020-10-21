@@ -18,6 +18,7 @@ class UserInfo : AppCompatActivity() {
     var userdataload = UserDataLoadClass()
     var realm : Realm? = null
     var toast : Toast? = null
+    var testedit = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,28 +60,26 @@ class UserInfo : AppCompatActivity() {
         ed_name.addTextChangedListener(object : TextWatcher {
             //입력하기 전에
             override fun afterTextChanged(p0: Editable?) {
+                userdata.curName = p0.toString()
             }
 
             //입력이 끝날때
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                ed_name.setBackgroundResource(R.drawable.background_edittext)
-                userdata.curName = p0.toString()
+
             }
 
-            //타이핑 중에
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                ed_name.setBackgroundResource(R.drawable.error_edittext)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
+
 
         })
 
         ed_number.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-
+                userdata.curNumber = p0.toString()
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                userdata.curNumber = p0.toString()
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
