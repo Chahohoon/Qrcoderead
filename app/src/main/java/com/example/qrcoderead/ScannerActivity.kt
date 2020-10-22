@@ -64,11 +64,11 @@ class ScannerActivity : Activity(), DecoratedBarcodeView.TorchListener {
 
 
     override fun onTorchOn() {
-        switchFlashlightButtonCheck = true
+        switchFlashlightButtonCheck = false
     }
 
     override fun onTorchOff() {
-        switchFlashlightButtonCheck = false //켜기
+        switchFlashlightButtonCheck = true //켜기
     }
 
     override fun onResume() {

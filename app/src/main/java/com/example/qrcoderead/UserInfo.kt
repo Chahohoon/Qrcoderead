@@ -18,7 +18,6 @@ class UserInfo : AppCompatActivity() {
     var userdataload = UserDataLoadClass()
     var realm : Realm? = null
     var toast : Toast? = null
-    var testedit = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +54,6 @@ class UserInfo : AppCompatActivity() {
 
     //edittext 처리
     fun setUserData() {
-
 
         ed_name.addTextChangedListener(object : TextWatcher {
             //입력하기 전에
