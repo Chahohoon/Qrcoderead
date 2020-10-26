@@ -5,8 +5,9 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
  data class UserDataClass(
-    var curName: String = "",
-    var curNumber: String  = "",
-    var curMemo: String = "",
-    var readvalue: String = ""
+    var name: String = "",        //name
+    var hp: String  = "",         // number
+    var data: String = "",        // memo
+    var dstamp: String = "",      //Qrcode read
+    var key: String = ""          //API Key
 )

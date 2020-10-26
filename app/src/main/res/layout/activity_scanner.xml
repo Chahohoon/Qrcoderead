@@ -17,17 +17,22 @@
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/qr_barcode"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="500dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" >
 
-        <ImageButton
-            android:id="@+id/btn_flashlight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:ignore="MissingConstraints"/>
     </com.journeyapps.barcodescanner.DecoratedBarcodeView>
+
+    <ImageButton
+        android:id="@+id/btn_flashlight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#040FFFFF"
+        android:src="@drawable/flash_off_black_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

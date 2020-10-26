@@ -33,10 +33,10 @@ class UserInfo : AppCompatActivity() {
                 toast = Toast.makeText(this,"정보를 입력해 주세요",Toast.LENGTH_SHORT)
                 toast?.show()
             }else {
-                setUserinfo( userdata.curName, userdata.curNumber)
+                setUserinfo( userdata.name, userdata.hp)
                 // MainActivity 전환 시 데이터 전달
-                intent.putExtra("Name",userdata.curName)
-                intent.putExtra("Number",userdata.curNumber)
+                intent.putExtra("Name",userdata.name)
+                intent.putExtra("Number",userdata.hp)
                 // 화면전환
                 startActivity(intent)
                 finish()
@@ -58,7 +58,7 @@ class UserInfo : AppCompatActivity() {
         ed_name.addTextChangedListener(object : TextWatcher {
             //입력하기 전에
             override fun afterTextChanged(p0: Editable?) {
-                userdata.curName = p0.toString()
+                userdata.name = p0.toString()
             }
 
             //입력이 끝날때
@@ -74,7 +74,7 @@ class UserInfo : AppCompatActivity() {
 
         ed_number.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                userdata.curNumber = p0.toString()
+                userdata.hp = p0.toString()
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {

@@ -46,15 +46,17 @@ class ScannerActivity : Activity(), DecoratedBarcodeView.TorchListener {
         btn_flashlight.setOnClickListener {
             if (switchFlashlightButtonCheck) {
                 qr_barcode.setTorchOn()
+                btn_flashlight.setImageResource(R.drawable.flash_on_black_24dp)
             } else {
                 qr_barcode.setTorchOff()
+                btn_flashlight.setImageResource(R.drawable.flash_off_black_24dp)
             }
         }
     }
 
     fun changeMaskColor() {
         val rnd = Random()
-        val color: Int = Color.argb(100, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+        val color = Color.argb(100, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
 //        zxing_viewfinder_vie(color)
     }
 
