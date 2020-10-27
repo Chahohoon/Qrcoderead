@@ -4,11 +4,15 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.SurfaceHolder
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
@@ -18,10 +22,16 @@ import com.google.zxing.integration.android.IntentIntegrator
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_scanner.*
+import kotlinx.android.synthetic.main.userinfo.*
 import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.*
+import retrofit2.http.Headers
 import java.io.IOException
 
 
@@ -61,14 +71,10 @@ class MainActivity : AppCompatActivity() {
     // realm 읽어오기
     fun onReadDataBase() {
         realm?.executeTransaction {
-            var datas = realm?.where(UserDataLoadClass::class.java)?.findAll()
-            datas?.let{
-                for (i in it){
-                    userdata.name = i.isName()
-                    userdata.hp = i.isnumber()
-                    userdata.data = i.isusermemo()
-                }
-            }
+           realm?.where(UserDataLoadClass::class.java)?.findFirst()?.let {
+                   userdata.name = it.isName()
+                   userdata.hp = it.isnumber()
+           }
         }
     }
 
@@ -78,13 +84,29 @@ class MainActivity : AppCompatActivity() {
         integrator.setBeepEnabled(true) //인식 시 "삑" 소리 남
     }
 
+    fun setMemo() {
+        ed_memo.addTextChangedListener(object : TextWatcher {
+            //입력하기 전에
+            override fun afterTextChanged(p0: Editable?) {
+                userdata.data = p0.toString()
+            }
 
+            //입력이 끝날때
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+        if(userdata.data == "") {
+            userdata.data = "방문"
+        }
+    }
 
     fun getAPi() {
         val url =""
         val okHttpClient = OkHttpClient()
         val request = Request.Builder()
-            .addHeader("","")
             .url(url)
             .build()
 
@@ -95,22 +117,32 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val res = response.body?.string()
-                var address = JSONArray(JSONObject(res).getString(""))
+//                var address = JSONArray(JSONObject(res))
+                System.out.println(res)
             }
         })
+
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl(url)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//
 
     }
 
 
     fun postAPi() {
-        val url = ""
+        onReadDataBase()
+        userdata.data = "방문"
+        val url = "https://www.dstamp.kr/api/v1/userstamp"
         val okHttpClient = OkHttpClient()
 
         var requestbody = FormBody.Builder()
             .add("name", userdata.name)
             .add("hp",  userdata.hp)
             .add("data", userdata.data)
-            .add("dstam", userdata.dstamp)
+            .add("dstamp", userdata.dstamp)
             .add("key", userdata.key)
             .build()
 
@@ -121,14 +153,14 @@ class MainActivity : AppCompatActivity() {
 
         okHttpClient.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
-//                TODO("Not yet implemented")
             }
 
             override fun onResponse(call: Call, response: Response) {
-//                TODO("Not yet implemented")
                 val res = response.body?.string()
                 try {
-
+                    var userinfo = JSONArray(JSONObject(res))
+                    Log.d("TEST",userinfo.toString())
+                    System.out.println(userinfo)
                 } catch (e:JSONException) {
                     e.printStackTrace()
                 }
@@ -140,6 +172,7 @@ class MainActivity : AppCompatActivity() {
     fun FirebaseDataWrite() {
         //realm 데이터 불러오기
         onReadDataBase()
+        userdata.data = "방문"
         // 파이어 베이스 저장
         FirebaseDatabase.getInstance().reference.child(userdata.name).setValue(userdata)
     }
@@ -154,6 +187,8 @@ class MainActivity : AppCompatActivity() {
             } else {
 //                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
                 userdata.dstamp = result.contents
+//                setMemo()
+                postAPi()
                 FirebaseDataWrite()
             }
         } else {
@@ -177,5 +212,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+}
+
+interface RetrofitAPI {
+    @Headers("accept : application/json", "content-type : application/json")
+    @POST()
 }
 

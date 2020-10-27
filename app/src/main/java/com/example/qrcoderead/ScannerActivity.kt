@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
@@ -21,6 +23,7 @@ class ScannerActivity : Activity(), DecoratedBarcodeView.TorchListener {
 
     var switchFlashlightButtonCheck: Boolean = true
     var capture: CaptureManager? = null
+    var userdata = UserDataClass()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,7 @@ class ScannerActivity : Activity(), DecoratedBarcodeView.TorchListener {
 
         switchFlashlight()
     }
+
 
     fun hasFlash (): Boolean {
         return applicationContext.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)

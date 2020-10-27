@@ -68,8 +68,6 @@ class UserInfo : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
-
-
         })
 
         ed_number.addTextChangedListener(object : TextWatcher {
@@ -84,8 +82,6 @@ class UserInfo : AppCompatActivity() {
             }
 
         })
-
-
     }
 
     
