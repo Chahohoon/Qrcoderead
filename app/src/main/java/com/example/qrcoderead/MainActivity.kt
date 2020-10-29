@@ -18,13 +18,20 @@ import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.JsonObject
 import com.google.zxing.integration.android.IntentIntegrator
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_scanner.*
 import kotlinx.android.synthetic.main.userinfo.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.stringFromUtf8Bytes
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Utf8
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -33,6 +40,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import retrofit2.http.Headers
 import java.io.IOException
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -135,32 +143,30 @@ class MainActivity : AppCompatActivity() {
     fun postAPi() {
         onReadDataBase()
         userdata.data = "방문"
+
         val url = "https://www.dstamp.kr/api/v1/userstamp"
+        val json = "{\"name:${userdata.name}\"hp:${userdata.hp},\"key:${userdata.key}\"dstamp:\"${userdata.dstamp}\"data:${userdata.data}\"}" // Json data
+        var requestBody = json.toRequestBody(("application/json; charset=utf-8").toMediaType())
         val okHttpClient = OkHttpClient()
 
-        var requestbody = FormBody.Builder()
-            .add("name", userdata.name)
-            .add("hp",  userdata.hp)
-            .add("data", userdata.data)
-            .add("dstamp", userdata.dstamp)
-            .add("key", userdata.key)
-            .build()
+        System.out.println(Json)
 
+
+        //디버깅할때
         val request = Request.Builder()
             .url(url)
-            .post(requestbody)
+            .post(requestBody)
             .build()
+
+            Log.d("DDDD", requestBody.toString())
 
         okHttpClient.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val res = response.body?.string()
+                val res = response.body.toString()
                 try {
-                    var userinfo = JSONArray(JSONObject(res))
-                    Log.d("TEST",userinfo.toString())
-                    System.out.println(userinfo)
                 } catch (e:JSONException) {
                     e.printStackTrace()
                 }
@@ -212,10 +218,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-}
 
-interface RetrofitAPI {
-    @Headers("accept : application/json", "content-type : application/json")
-    @POST()
+    fun jsonKeyValue() {
+        val jsonString = """
+        {
+            "name": "${userdata.name}",
+            "hp": "${userdata.hp}",
+            "data": "${userdata.data}",
+            "dstamp": "${userdata.dstamp}",
+            "key": "${userdata.key}"
+        }
+    """.trimIndent()
+
+        val jObject: JSONObject = JSONObject(jsonString)
+
+        val name = jObject.getString("title")
+        val hp = jObject.getString("url")
+        val data = jObject.getString("data")
+        val dstamp = jObject.getString("dstamp")
+        val key = jObject.getString("key")
+
+    }
 }
 
