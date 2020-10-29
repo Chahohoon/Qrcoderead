@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.service.autofill.UserData
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -18,6 +19,7 @@ import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.zxing.integration.android.IntentIntegrator
 import io.realm.Realm
@@ -126,16 +128,8 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 val res = response.body?.string()
 //                var address = JSONArray(JSONObject(res))
-                System.out.println(res)
             }
         })
-
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl(url)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//
-//
 
     }
 
@@ -145,12 +139,10 @@ class MainActivity : AppCompatActivity() {
         userdata.data = "방문"
 
         val url = "https://www.dstamp.kr/api/v1/userstamp"
-        val json = "{\"name:${userdata.name}\"hp:${userdata.hp},\"key:${userdata.key}\"dstamp:\"${userdata.dstamp}\"data:${userdata.data}\"}" // Json data
-        var requestBody = json.toRequestBody(("application/json; charset=utf-8").toMediaType())
+        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val json = Gson().toJson(userdata)
+        val requestBody = json.toString().toRequestBody(mediaType)
         val okHttpClient = OkHttpClient()
-
-        System.out.println(Json)
-
 
         //디버깅할때
         val request = Request.Builder()
@@ -158,21 +150,31 @@ class MainActivity : AppCompatActivity() {
             .post(requestBody)
             .build()
 
-            Log.d("DDDD", requestBody.toString())
-
+        Log.d("DDDD", requestBody.toString())
         okHttpClient.newCall(request).enqueue(object : Callback{
+
             override fun onFailure(call: Call, e: IOException) {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val res = response.body.toString()
+                val res = response.body?.string()
                 try {
+                    var address = JSONArray(JSONObject(res))
+                    Log.d("DDDD", address.toString())
+//                    System.out.println(address)
                 } catch (e:JSONException) {
                     e.printStackTrace()
                 }
             }
 
         })
+//        System.out.println(requestBody)
+//        var retrofit = Retrofit.Builder()
+//            .baseUrl(url)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+
+
     }
 
     fun FirebaseDataWrite() {
@@ -229,6 +231,7 @@ class MainActivity : AppCompatActivity() {
             "key": "${userdata.key}"
         }
     """.trimIndent()
+        //trimIndent 들여쓰기 제거
 
         val jObject: JSONObject = JSONObject(jsonString)
 
@@ -239,5 +242,16 @@ class MainActivity : AppCompatActivity() {
         val key = jObject.getString("key")
 
     }
+
+//    interface RetrofitAPI {
+//        @FormUrlEncoded
+//        @POST("https://www.dstamp.kr/api/v1/userstamp/posts")
+//        fun keyValue (@Field("name") name : String,
+//                      @Field("hp") hp : String,
+//                      @Field("data") data : String,
+//                      @Field("dstamp") dstamp : String,
+//                      @Field("key") key : String
+//                      ): Call<>
+//    }
 }
 

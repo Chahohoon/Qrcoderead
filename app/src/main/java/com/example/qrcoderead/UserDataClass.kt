@@ -4,7 +4,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.serialization.Serializable
 
-@Serializable
  data class UserDataClass(
     var name: String = "",        //name
     var hp: String  = "",         // number
