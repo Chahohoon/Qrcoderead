@@ -55,8 +55,6 @@ class MainActivity : AppCompatActivity() {
     var realm : Realm? = null
     var userdata = UserDataClass()
     var userdataload = UserDataLoadClass()
-    var memoCheck : Boolean = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,19 +99,20 @@ class MainActivity : AppCompatActivity() {
         ed_memo.addTextChangedListener(object : TextWatcher {
             //입력하기 전에
             override fun afterTextChanged(p0: Editable?) {
-                memoCheck = true
                 userdata.data = p0.toString()
             }
 
             //입력이 끝날때
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                ed_memo.clearFocus()
             }
         })
+
         if(userdata.data == "") {
-            memoCheck = false
             userdata.data = "방문"
         }
     }
@@ -154,21 +153,35 @@ class MainActivity : AppCompatActivity() {
             .post(requestBody)
             .build()
 
-        Log.d("DDDD", requestBody.toString())
+        Log.d("QRcode", "$requestBody")
         okHttpClient.newCall(request).enqueue(object : Callback{
 
             override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val res = response.body?.string()
-                try {
-                    var address = JSONArray(JSONObject(res))
-                    Log.d("DDDD", address.toString())
-//                    System.out.println(address)
-                } catch (e:JSONException) {
-                    e.printStackTrace()
-                }
+                    if(!response.isSuccessful) {
+                        Log.d("QRcode", "$response")
+                        Log.d("QRcode", "$res")
+                        Log.d("QRcode", "응답실패")
+                    } else {
+                        Log.d("QRcode", "$res")
+                        Log.d("QRcode", "응답성공")
+
+
+                        runOnUiThread(object : Runnable {
+                            override fun run() {
+//                                TODO("Not yet implemented")
+                                try {
+
+                                } catch (e: JSONException) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        })
+                    }
             }
 
         })
@@ -204,9 +217,8 @@ class MainActivity : AppCompatActivity() {
             } else {
 //                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
                 userdata.dstamp = result.contents
-//                setMemo()
-//                postAPi()
-                FirebaseDataWrite()
+                postAPi()
+//                FirebaseDataWrite()
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
