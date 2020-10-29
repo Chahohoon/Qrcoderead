@@ -34,25 +34,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/main_textInputLayout_ID"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/qr_barcode">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/ed_memo"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:hint="현재 위치에 대한 메모를 남겨주세요"
-            android:inputType="text"
-            android:nextFocusDown="@id/ed_number" />
-    </com.google.android.material.textfield.TextInputLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

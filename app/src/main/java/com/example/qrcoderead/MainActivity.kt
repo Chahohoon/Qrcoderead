@@ -55,16 +55,19 @@ class MainActivity : AppCompatActivity() {
     var realm : Realm? = null
     var userdata = UserDataClass()
     var userdataload = UserDataLoadClass()
+    var memoCheck : Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         onInitDataBase()
+        setMemo()
 
         btn_qrcode.setOnClickListener {
             ReadQrcode()
         }
+
 
 
     }
@@ -98,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         ed_memo.addTextChangedListener(object : TextWatcher {
             //입력하기 전에
             override fun afterTextChanged(p0: Editable?) {
+                memoCheck = true
                 userdata.data = p0.toString()
             }
 
@@ -109,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         if(userdata.data == "") {
+            memoCheck = false
             userdata.data = "방문"
         }
     }
@@ -136,7 +141,6 @@ class MainActivity : AppCompatActivity() {
 
     fun postAPi() {
         onReadDataBase()
-        userdata.data = "방문"
 
         val url = "https://www.dstamp.kr/api/v1/userstamp"
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
@@ -180,11 +184,16 @@ class MainActivity : AppCompatActivity() {
     fun FirebaseDataWrite() {
         //realm 데이터 불러오기
         onReadDataBase()
-        userdata.data = "방문"
         // 파이어 베이스 저장
         FirebaseDatabase.getInstance().reference.child(userdata.name).setValue(userdata)
     }
 
+    override fun onResume() {
+        super.onResume()
+        ed_memo.text?.clear()
+        ed_memo.clearFocus()
+        setMemo()
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -196,7 +205,7 @@ class MainActivity : AppCompatActivity() {
 //                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
                 userdata.dstamp = result.contents
 //                setMemo()
-                postAPi()
+//                postAPi()
                 FirebaseDataWrite()
             }
         } else {
