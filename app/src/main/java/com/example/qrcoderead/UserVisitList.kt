@@ -14,15 +14,11 @@ import androidx.fragment.app.Fragment
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
-class UserQrcodeList : AppCompatActivity() {
+class UserVisitList : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.userqrcodelist)
-
-    }
-
-    fun test() {
+        setContentView(R.layout.uservisitlist)
 
     }
 

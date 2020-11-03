@@ -93,7 +93,7 @@ class UserInfo : AppCompatActivity() {
             var namecheck = realm?.where(UserDataLoadClass::class.java)?.equalTo("name",name)?.findFirst()
             if(namecheck == null) {
                 var temp = it.createObject(UserDataLoadClass::class.java)
-                temp.setData(name,number)
+                temp.setData(name,number,"")
                 Log.d("realm 저장완료", temp.toString())
             }
         }

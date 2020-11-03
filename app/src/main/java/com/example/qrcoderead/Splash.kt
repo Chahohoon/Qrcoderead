@@ -6,13 +6,13 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.kotlin.delete
 
 class Splash : AppCompatActivity() {
 
     var userdata = UserDataClass()
     var userload = UserDataLoadClass()
     var realm : Realm? = null
-    private var usercheck = listOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +23,7 @@ class Splash : AppCompatActivity() {
     }
 
     fun onInitDataBase(){
+
         Realm.init(this)
         var config = RealmConfiguration.Builder().name("myrealm.realm").build()
         Realm.setDefaultConfiguration(config)

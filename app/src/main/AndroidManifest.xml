@@ -36,6 +36,8 @@
         </activity>
 
         <activity android:name=".ScannerActivity"/>
+        <activity android:name=".UserQrcodeList"/>
+        <activity android:name=".UserVisitList"/>
 
     </application>
 

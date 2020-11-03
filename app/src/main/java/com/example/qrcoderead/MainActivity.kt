@@ -34,19 +34,15 @@ class MainActivity : AppCompatActivity() {
     val okHttpClient = OkHttpClient()
     var realm : Realm? = null
     var userdata = UserDataClass()
-    var userdataload = UserDataLoadClass()
+    var usercore = UserCoreClass()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         onInitDataBase()
         setMemo()
-
-        btn_qrcode.setOnClickListener {
-            ReadQrcode()
-        }
-
-
+        setChangeDisplay()
 
 
     }
@@ -70,12 +66,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 스캐너 시작
     fun ReadQrcode() {
         integrator.setCaptureActivity(ScannerActivity::class.java)
         integrator.initiateScan()
         integrator.setBeepEnabled(true) //인식 시 "삑" 소리 남
     }
 
+    // 메모 변경 클래스
     fun setMemo() {
         ed_memo.addTextChangedListener(object : TextWatcher {
             //입력하기 전에
@@ -96,88 +94,92 @@ class MainActivity : AppCompatActivity() {
         if(userdata.data == "") {
             userdata.data = "방문"
         }
+
+        realm?.executeTransaction {
+            var namecheck = realm?.where(UserDataLoadClass::class.java)?.equalTo("memo",userdata.data)?.findFirst()
+            if(namecheck == null) {
+                var temp = it.createObject(UserDataLoadClass::class.java)
+                temp.setData(userdata.name,userdata.hp,userdata.data)
+                Log.d("realm 저장완료", temp.toString())
+            }
+        }
     }
 
-    fun getAPi() {
-        val url =""
-        val okHttpClient = OkHttpClient()
-        val request = Request.Builder()
-            .url(url)
-            .build()
-
-        //동기 : execute // 비동기 : enqueue
-        okHttpClient.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val res = response.body?.string()
-//                var address = JSONArray(JSONObject(res))
-            }
-        })
-
-    }
-
-
-    fun postAPi() {
+    // 유저정보 기입
+    fun setUserDataPost() {
         onReadDataBase()
 
-        val url = "https://www.dstamp.kr/api/v1/usersite"
-        val mediaType = "application/json;charset=utf-8".toMediaType()
-        val json = Gson().toJson(userdata)
-        val requestBody = json.toString().toRequestBody(mediaType)
-        Log.d("QRcode", "$requestBody")
-        //디버깅할때
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-
-        okHttpClient.newCall(request).enqueue(object : Callback {
-
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val res = response.body?.string()
-                Log.d("QRcode", response.isSuccessful.toString())
-                if (!response.isSuccessful) {
-                    Log.d("QRcode3", "응답실패")
-                } else {
-//                    var userdata = JSONArray(JSONObject(res).getString("name"))
-
-                    Log.d("QRcode", "$res")
-                    Log.d("QRcode", "응답성공")
-
-
-//                    runOnUiThread(object : Runnable {
-//                        override fun run() {
-//                            try {
-////                                val userdata = JSONObject(res)
-////                                val parentJArray = userdata.getString("responseCode")
+//        val url = "https://www.dstamp.kr/api/v1/usersite"
+//        val mediaType = "application/json;charset=utf-8".toMediaType()
+//        val json = Gson().toJson(userdata)
+//        val requestBody = json.toString().toRequestBody(mediaType)
+//        Log.d("QRcode", "$requestBody")
+//        //디버깅할때
+//        val request = Request.Builder()
+//            .url(url)
+//            .post(requestBody)
+//            .build()
 //
-//                                var userdata = JSONArray(JSONObject(res).getString("data"))
-//                                Log.d("QRcode", "$userdata")
-//                            } catch (e: JSONException) {
-//                                e.printStackTrace()
-//                            }
-//                        }
-//                    })
-                }
-            }
+//        okHttpClient.newCall(request).enqueue(object : Callback {
+//
+//            override fun onFailure(call: Call, e: IOException) {
+//                e.printStackTrace()
+//            }
+//
+//            override fun onResponse(call: Call, response: Response) {
+//                val res = response.body?.string()
+//                Log.d("QRcode", response.isSuccessful.toString())
+//                if (!response.isSuccessful) {
+//                    Log.d("QRcode3", "응답실패")
+//                } else {
+////                    var userdata = JSONArray(JSONObject(res).getString("name"))
+//
+//                    Log.d("QRcode", "$res")
+//                    Log.d("QRcode", "응답성공")
+//                }
+//            }
+//
+//        })
 
-        })
+        usercore.setUserDataPost()
 
 
 
     }
 
+    // 파이어베이스 테스트 클래스
     fun FirebaseDataWrite() {
         //realm 데이터 불러오기
         onReadDataBase()
         // 파이어 베이스 저장
         FirebaseDatabase.getInstance().reference.child(userdata.name).setValue(userdata)
+    }
+
+    fun setChangeDisplay() {
+
+        val intentUserList = Intent(this, UserQrcodeList::class.java)
+        val intentUserVisit = Intent(this, UserVisitList::class.java)
+
+        //스캐너 클릭
+        btn_qrcode.setOnClickListener {
+            ReadQrcode()
+        }
+
+        //
+        btn_qrcodelist.setOnClickListener {
+            intent.putExtra("data",userdata.data)
+            intent.putExtra("dstamp",userdata.dstamp)
+            startActivity(intentUserList)
+            finish()
+        }
+
+        //유저 방문리스트 확인
+        btn_visit.setOnClickListener {
+            intent.putExtra("data",userdata.data)
+            intent.putExtra("dstamp",userdata.dstamp)
+            startActivity(intentUserVisit)
+            finish()
+        }
     }
 
     override fun onResume() {
@@ -187,6 +189,7 @@ class MainActivity : AppCompatActivity() {
         setMemo()
     }
 
+    // 스캐너결과 받아오는 곳
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
@@ -196,7 +199,7 @@ class MainActivity : AppCompatActivity() {
             } else {
 //                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
                 userdata.dstamp = result.contents
-                postAPi()
+                setUserDataPost()
 //                FirebaseDataWrite()
             }
         } else {
@@ -220,38 +223,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    fun jsonKeyValue() {
-        val jsonString = """
-        {
-            "name": "${userdata.name}",
-            "hp": "${userdata.hp}",
-            "data": "${userdata.data}",
-            "dstamp": "${userdata.dstamp}",
-            "key": "${userdata.key}"
-        }
-    """.trimIndent()
-        //trimIndent 들여쓰기 제거
-
-        val jObject: JSONObject = JSONObject(jsonString)
-
-        val name = jObject.getString("title")
-        val hp = jObject.getString("url")
-        val data = jObject.getString("data")
-        val dstamp = jObject.getString("dstamp")
-        val key = jObject.getString("key")
-
-    }
-
-//    interface RetrofitAPI {
-//        @FormUrlEncoded
-//        @POST("https://www.dstamp.kr/api/v1/userstamp/posts")
-//        fun keyValue (@Field("name") name : String,
-//                      @Field("hp") hp : String,
-//                      @Field("data") data : String,
-//                      @Field("dstamp") dstamp : String,
-//                      @Field("key") key : String
-//                      ): Call<>
-//    }
 }
 
