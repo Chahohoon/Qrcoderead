@@ -1,48 +1,28 @@
 package com.example.qrcoderead
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.service.autofill.UserData
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.SurfaceHolder
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import com.google.android.gms.vision.CameraSource
-import com.google.android.gms.vision.Detector
-import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.google.zxing.integration.android.IntentIntegrator
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_scanner.*
-import kotlinx.android.synthetic.main.userinfo.*
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.stringFromUtf8Bytes
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import okio.Utf8
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.*
-import retrofit2.http.Headers
 import java.io.IOException
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -65,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         btn_qrcode.setOnClickListener {
             ReadQrcode()
         }
+
 
 
 
@@ -141,20 +122,18 @@ class MainActivity : AppCompatActivity() {
     fun postAPi() {
         onReadDataBase()
 
-        val url = "https://www.dstamp.kr/api/v1/userstamp"
-        val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val url = "https://www.dstamp.kr/api/v1/usersite"
+        val mediaType = "application/json;charset=utf-8".toMediaType()
         val json = Gson().toJson(userdata)
         val requestBody = json.toString().toRequestBody(mediaType)
-        val okHttpClient = OkHttpClient()
-
+        Log.d("QRcode", "$requestBody")
         //디버깅할때
         val request = Request.Builder()
             .url(url)
             .post(requestBody)
             .build()
 
-        Log.d("QRcode", "$requestBody")
-        okHttpClient.newCall(request).enqueue(object : Callback{
+        okHttpClient.newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
@@ -162,34 +141,34 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val res = response.body?.string()
-                    if(!response.isSuccessful) {
-                        Log.d("QRcode", "$response")
-                        Log.d("QRcode", "$res")
-                        Log.d("QRcode", "응답실패")
-                    } else {
-                        Log.d("QRcode", "$res")
-                        Log.d("QRcode", "응답성공")
+                Log.d("QRcode", response.isSuccessful.toString())
+                if (!response.isSuccessful) {
+                    Log.d("QRcode3", "응답실패")
+                } else {
+//                    var userdata = JSONArray(JSONObject(res).getString("name"))
+
+                    Log.d("QRcode", "$res")
+                    Log.d("QRcode", "응답성공")
 
 
-                        runOnUiThread(object : Runnable {
-                            override fun run() {
-//                                TODO("Not yet implemented")
-                                try {
-
-                                } catch (e: JSONException) {
-                                    e.printStackTrace()
-                                }
-                            }
-                        })
-                    }
+//                    runOnUiThread(object : Runnable {
+//                        override fun run() {
+//                            try {
+////                                val userdata = JSONObject(res)
+////                                val parentJArray = userdata.getString("responseCode")
+//
+//                                var userdata = JSONArray(JSONObject(res).getString("data"))
+//                                Log.d("QRcode", "$userdata")
+//                            } catch (e: JSONException) {
+//                                e.printStackTrace()
+//                            }
+//                        }
+//                    })
+                }
             }
 
         })
-//        System.out.println(requestBody)
-//        var retrofit = Retrofit.Builder()
-//            .baseUrl(url)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
+
 
 
     }
