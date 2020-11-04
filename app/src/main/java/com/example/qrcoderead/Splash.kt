@@ -23,11 +23,11 @@ class Splash : AppCompatActivity() {
     }
 
     fun onInitDataBase(){
-
         Realm.init(this)
         var config = RealmConfiguration.Builder().name("myrealm.realm").build()
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
+
     }
 
 

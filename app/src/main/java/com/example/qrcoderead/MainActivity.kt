@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     var userdata = UserDataClass()
     var usercore = UserCoreClass()
 
+    var dCheckDisplay = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -108,43 +110,7 @@ class MainActivity : AppCompatActivity() {
     // 유저정보 기입
     fun setUserDataPost() {
         onReadDataBase()
-
-//        val url = "https://www.dstamp.kr/api/v1/usersite"
-//        val mediaType = "application/json;charset=utf-8".toMediaType()
-//        val json = Gson().toJson(userdata)
-//        val requestBody = json.toString().toRequestBody(mediaType)
-//        Log.d("QRcode", "$requestBody")
-//        //디버깅할때
-//        val request = Request.Builder()
-//            .url(url)
-//            .post(requestBody)
-//            .build()
-//
-//        okHttpClient.newCall(request).enqueue(object : Callback {
-//
-//            override fun onFailure(call: Call, e: IOException) {
-//                e.printStackTrace()
-//            }
-//
-//            override fun onResponse(call: Call, response: Response) {
-//                val res = response.body?.string()
-//                Log.d("QRcode", response.isSuccessful.toString())
-//                if (!response.isSuccessful) {
-//                    Log.d("QRcode3", "응답실패")
-//                } else {
-////                    var userdata = JSONArray(JSONObject(res).getString("name"))
-//
-//                    Log.d("QRcode", "$res")
-//                    Log.d("QRcode", "응답성공")
-//                }
-//            }
-//
-//        })
-
-        usercore.setUserDataPost()
-
-
-
+        usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
     }
 
     // 파이어베이스 테스트 클래스
@@ -162,21 +128,24 @@ class MainActivity : AppCompatActivity() {
 
         //스캐너 클릭
         btn_qrcode.setOnClickListener {
+            dCheckDisplay = 1
             ReadQrcode()
         }
 
         //
         btn_qrcodelist.setOnClickListener {
-            intent.putExtra("data",userdata.data)
-            intent.putExtra("dstamp",userdata.dstamp)
+            dCheckDisplay = 2
+//            intent.putExtra("data",userdata.data)
+//            intent.putExtra("dstamp",userdata.dstamp)
             startActivity(intentUserList)
             finish()
         }
 
         //유저 방문리스트 확인
         btn_visit.setOnClickListener {
-            intent.putExtra("data",userdata.data)
-            intent.putExtra("dstamp",userdata.dstamp)
+            dCheckDisplay = 3
+//            intent.putExtra("data",userdata.data)
+//            intent.putExtra("dstamp",userdata.dstamp)
             startActivity(intentUserVisit)
             finish()
         }
@@ -199,7 +168,18 @@ class MainActivity : AppCompatActivity() {
             } else {
 //                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
                 userdata.dstamp = result.contents
-                setUserDataPost()
+                //유저정보 기입
+                onReadDataBase()
+
+                        usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+
+
+                        usercore.getUserDataList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+
+
+                        usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+
+
 //                FirebaseDataWrite()
             }
         } else {
