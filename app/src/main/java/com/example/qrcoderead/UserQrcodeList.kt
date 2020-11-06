@@ -1,5 +1,6 @@
 package com.example.qrcoderead
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -8,26 +9,32 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Adapter
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.Realm
-import io.realm.RealmConfiguration
 import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.userqrcodelist.*
+import kotlinx.android.synthetic.main.userqrcodelist_item.*
+import kotlinx.android.synthetic.main.userqrcodelist_item.view.*
 
-class UserQrcodeList : AppCompatActivity() {
+class UserQrcodeList : Activity() {
+
+    var Adapter = ListAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.userqrcodelist)
 
+
+        qrcodelist_view.adapter = Adapter
+
     }
 
 }
 
-class ListAdapter : RecyclerView.Adapter<com.example.qrcoderead.ListAdapter.ViewHolder>() {
+class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
     private var items = mutableListOf<UserDataClass>()
 
@@ -37,18 +44,15 @@ class ListAdapter : RecyclerView.Adapter<com.example.qrcoderead.ListAdapter.View
         return ViewHolder(view)
     }
 
-    ///아이템 바인딩
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        TODO("Not yet implemented")
+    ///아이템 리스트화
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onBindViewHolder(holder: ListAdapter.ViewHolder, position: Int) {
         val item = items.get(position)
+
     }
 
-    override fun getItemCount(): Int {
-//        TODO("Not yet implemented")
-    }
+    override fun getItemCount(): Int = items.size
 
-
-    inner class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView),
-        LayoutContainer
+    inner class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer
 }
 
