@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
             if(namecheck == null) {
                 var temp = it.createObject(UserDataLoadClass::class.java)
                 temp.setData(userdata.name,userdata.hp,userdata.data)
-                Log.d("realm 저장완료", temp.toString())
             }
         }
     }
@@ -171,15 +170,9 @@ class MainActivity : AppCompatActivity() {
                 //유저정보 기입
                 onReadDataBase()
 
-                        usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
-
-
-                        usercore.getUserDataList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
-
-
-                        usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
-
-
+                usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+                usercore.getUserDataList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+                usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
 //                FirebaseDataWrite()
             }
         } else {

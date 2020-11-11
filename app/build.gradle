@@ -56,3 +56,8 @@ dependencies {
 
     implementation 'com.android.support:recyclerview-v7:30.0.0'
 }
+
+androidExtensions {
+    // https://kotlinlang.org/docs/tutorials/android-plugin.html#experimental-mode
+    experimental = true
+}

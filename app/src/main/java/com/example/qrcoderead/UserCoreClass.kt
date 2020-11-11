@@ -6,13 +6,26 @@ import io.realm.Realm
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
+
+data class DataList (
+    var data : String = "",
+    var hp : String = "",
+    var name : String = ""
+)
 
 class UserCoreClass {
 
-    val userdata = UserDataClass()
+    var userdata = UserDataClass()
+    var userqrcodelist = UserQrcodeList()
     val okHttpClient = OkHttpClient()
     var realm : Realm? = null
+
+    var DataList = mutableListOf<DataList>()
+
 
     fun setUserDataPost(name : String, hp : String, data : String, dstamp : String) {
         //내부 DB에 저장된 값 userdata 클래스에 넣기
@@ -45,7 +58,7 @@ class UserCoreClass {
                 } else {
 //                    var userdata = JSONArray(JSONObject(res).getString("name"))
 
-                    Log.d("setUserDataPost", "$res")
+                    Log.d("뭘까1", "$res")
                     Log.d("setUserDataPost", "응답성공")
                 }
             }
@@ -81,9 +94,25 @@ class UserCoreClass {
                 if (!response.isSuccessful) {
                     Log.d("getUserDataList", "응답실패")
                 } else {
-//                    var userdata = JSONArray(JSONObject(res).getString("name"))
+                    try {
 
-                    Log.d("getUserDataList", "$res")
+                        var userdata = JSONArray(JSONObject(res))
+
+                        //data: , hp : , name : 모든 유저 불러옴
+                        // 받은걸 여기서 다시 액티비티로 넘겨야 함
+                        for (index in 0 until userdata.length()) {
+
+                            DataList = mutableListOf<DataList>()
+                            var res = userdata.getJSONObject(index)
+                            var data = res.get("data").toString()
+                            var hp = res.get("hp").toString()
+                            var name = res.get("name").toString()
+
+                            userqrcodelist.getQrcodeList(data, hp, name)
+                        }
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
                     Log.d("getUserDataList", "응답성공")
                 }
             }
@@ -120,7 +149,10 @@ class UserCoreClass {
                 } else {
 //                    var userdata = JSONArray(JSONObject(res).getString("name"))
 
-                    Log.d("getUserVisitList", "$res")
+                    Log.d("뭘까3", "$res")
+
+
+                    // data : , div : , gps : , site : , time :
                     Log.d("getUserVisitList", "응답성공")
                 }
             }
