@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var detector : BarcodeDetector
     private lateinit var cameraSource: CameraSource
     val integrator = IntentIntegrator(this)
-    val okHttpClient = OkHttpClient()
     var realm : Realm? = null
     var userdata = UserDataClass()
     var usercore = UserCoreClass()
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         setMemo()
         setChangeDisplay()
 
-
+        setUserDataPost()
     }
 
     //realm 초기화
@@ -106,10 +105,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 유저정보 기입
+    //DB 불러옴
     fun setUserDataPost() {
         onReadDataBase()
-        usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+        usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
     }
 
     // 파이어베이스 테스트 클래스
@@ -118,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         onReadDataBase()
         // 파이어 베이스 저장
         FirebaseDatabase.getInstance().reference.child(userdata.name).setValue(userdata)
+
     }
 
     fun setChangeDisplay() {
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
 //            intent.putExtra("data",userdata.data)
 //            intent.putExtra("dstamp",userdata.dstamp)
             startActivity(intentUserList)
-            finish()
+
         }
 
         //유저 방문리스트 확인
@@ -146,7 +146,6 @@ class MainActivity : AppCompatActivity() {
 //            intent.putExtra("data",userdata.data)
 //            intent.putExtra("dstamp",userdata.dstamp)
             startActivity(intentUserVisit)
-            finish()
         }
     }
 
@@ -167,12 +166,11 @@ class MainActivity : AppCompatActivity() {
             } else {
 //                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
                 userdata.dstamp = result.contents
-                //유저정보 기입
+                //DB 불러옴
                 onReadDataBase()
 
                 usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
                 usercore.getUserDataList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
-                usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
 //                FirebaseDataWrite()
             }
         } else {

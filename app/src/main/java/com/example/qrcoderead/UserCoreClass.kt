@@ -11,11 +11,29 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-data class DataList (
-    var data : String = "",
-    var hp : String = "",
-    var name : String = ""
+data class infolist(
+    val data: String,
+    val name: String,
+    val hp: String
 )
+
+data class visitlist(
+    val data: String,
+    val div: String,
+    val gps: String,
+    val site: String,
+    val time: String
+)
+
+enum class InfoItem(name: String) {
+    방명록("data"),
+    이름("name"),
+    번호("hp"),
+    가게명("div"),
+    위치("gps"),
+    사이트("site"),
+    시간("time")
+}
 
 class UserCoreClass {
 
@@ -24,10 +42,14 @@ class UserCoreClass {
     val okHttpClient = OkHttpClient()
     var realm : Realm? = null
 
-    var DataList = mutableListOf<DataList>()
+    var infoList = mutableMapOf<String, String>()
+    var visitList = mutableMapOf<String, String>()
+    val testvv = mutableListOf<String>()
 
+    fun JSONArray.visitList(): MutableList<JSONObject> = MutableList(length(), this::getJSONObject)
 
-    fun setUserDataPost(name : String, hp : String, data : String, dstamp : String) {
+    //유저 정보 서버에 등록
+    fun setUserDataPost(name: String, hp: String, data: String, dstamp: String) {
         //내부 DB에 저장된 값 userdata 클래스에 넣기
 
         userdata.name = name
@@ -67,7 +89,8 @@ class UserCoreClass {
 
     }
 
-    fun getUserDataList(name : String, hp : String, data : String, dstamp : String) {
+    // 누가 왔다갔는지 확인
+    fun getUserDataList(name: String, hp: String, data: String, dstamp: String) {
         userdata.name = name
         userdata.hp = hp
         userdata.data = data
@@ -97,30 +120,37 @@ class UserCoreClass {
                     try {
 
                         var userdata = JSONArray(JSONObject(res))
-
                         //data: , hp : , name : 모든 유저 불러옴
                         // 받은걸 여기서 다시 액티비티로 넘겨야 함
                         for (index in 0 until userdata.length()) {
-
-                            DataList = mutableListOf<DataList>()
+//
                             var res = userdata.getJSONObject(index)
-                            var data = res.get("data").toString()
-                            var hp = res.get("hp").toString()
-                            var name = res.get("name").toString()
 
-                            userqrcodelist.getQrcodeList(data, hp, name)
+//                            DataListt = res as MutableMap<String, String>
+
+                            //  [{"data":"방문","hp":"010-9323-****","name":"차호*"}
                         }
+                        infoList = res as MutableMap<String, String>
+
+                        res.keys
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
-                    Log.d("getUserDataList", "응답성공")
+                    Log.d("DataListt3", res.toString())
+                    Log.d("DataListt3", "$infoList")
+                    Log.d("DataListt4", "${infoList}")
+                    Log.d("DataListt5", infoList.toString())
+                    Log.d("DataListt6", infoList.values.toString())
+                    Log.d("DataListt7", infoList.keys.toString())
+                    //{"data":"\ubc29\ubb38","hp":"010-9323-****","name":"\ucc28\ud638*"}
                 }
             }
 
         })
     }
 
-    fun getUserVisitList(name : String, hp : String, data : String, dstamp : String) {
+    //방문했던 곳 확인
+    fun getUserVisitList(name: String, hp: String, data: String, dstamp: String) {
         userdata.name = name
         userdata.hp = hp
         userdata.data = data
@@ -135,7 +165,6 @@ class UserCoreClass {
             .url(url)
             .post(requestBody)
             .build()
-
         okHttpClient.newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {
@@ -147,16 +176,53 @@ class UserCoreClass {
                 if (!response.isSuccessful) {
                     Log.d("getUserVisitList", "응답실패")
                 } else {
-//                    var userdata = JSONArray(JSONObject(res).getString("name"))
+                    try {
+                        val visitobj = JSONObject(res)
+                        val visitdata = visitobj.getJSONArray("Value")
 
-                    Log.d("뭘까3", "$res")
+                        visitList
+//
+//                        Log.d("getUserVisitList2", "$res")
+                        // data : , div : , gps : , site : , time :
+                        //{"data":"\ubc29\ubb38","div":"beauty","gps":"37.364809,127.107684","site":"THE_NINE","time":"20-10-29 10:37"}
 
-
-                    // data : , div : , gps : , site : , time :
-                    Log.d("getUserVisitList", "응답성공")
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
+                    System.out.println(visitList)
+//                    Log.d("getUserVisitList", "$res")
                 }
             }
 
         })
     }
+
+    fun getData(info: InfoItem): String {
+        return when(info) {
+            InfoItem.방명록 -> {
+                infoList[InfoItem.방명록.name].toString()
+            }
+            InfoItem.이름 -> {
+                infoList[InfoItem.이름.name].toString()
+            }
+            InfoItem.번호 -> {
+                infoList[InfoItem.번호.name].toString()
+            }
+            InfoItem.가게명 -> {
+                visitList[InfoItem.가게명.name].toString()
+            }
+            InfoItem.사이트 -> {
+                visitList[InfoItem.사이트.name].toString()
+            }
+            InfoItem.위치 -> {
+                visitList[InfoItem.위치.name].toString()
+            }
+            InfoItem.시간 -> {
+                visitList[InfoItem.시간.name].toString()
+            }
+
+            else -> {""}
+        }
+    }
+
 }
