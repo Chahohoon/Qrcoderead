@@ -3,6 +3,7 @@ package com.example.qrcoderead
 import android.util.Log
 import com.google.gson.Gson
 import io.realm.Realm
+import kotlinx.serialization.Serializable
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -10,13 +11,14 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import com.example.qrcoderead.visitlist as visitlist
 
 data class infolist(
     val data: String,
     val name: String,
     val hp: String
 )
-
+@Serializable
 data class visitlist(
     val data: String,
     val div: String,
@@ -44,9 +46,8 @@ class UserCoreClass {
 
     var infoList = mutableMapOf<String, String>()
     var visitList = mutableMapOf<String, String>()
-    val testvv = mutableListOf<String>()
 
-    fun JSONArray.visitList(): MutableList<JSONObject> = MutableList(length(), this::getJSONObject)
+
 
     //유저 정보 서버에 등록
     fun setUserDataPost(name: String, hp: String, data: String, dstamp: String) {
@@ -168,7 +169,6 @@ class UserCoreClass {
         okHttpClient.newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -177,10 +177,28 @@ class UserCoreClass {
                     Log.d("getUserVisitList", "응답실패")
                 } else {
                     try {
-                        val visitobj = JSONObject(res)
-                        val visitdata = visitobj.getJSONArray("Value")
+                        val visitobj = JSONArray(res)
 
-                        visitList
+                        for (i in 0 until visitobj.length()) {
+                            val result = visitobj.getJSONObject(i)
+
+                            var sdata = result.getString("data")
+                            var sdiv = result.getString("div")
+                            var sgps = result.getString("gps")
+                            var ssite = result.getString("site")
+                            var stime = result.getString("time")
+
+//                            visitlist(sdata, sdiv, sgps, ssite, stime)
+
+                            visitList.put("data",sdata)
+                            visitList.put("div",sdiv)
+                            visitList.put("gps",sgps)
+                            visitList.put("site",ssite)
+                            visitList.put("time",stime)
+
+                        }
+//
+
 //
 //                        Log.d("getUserVisitList2", "$res")
                         // data : , div : , gps : , site : , time :
@@ -189,8 +207,7 @@ class UserCoreClass {
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
-                    System.out.println(visitList)
-//                    Log.d("getUserVisitList", "$res")
+                    Log.d("getUserVisitList", "$visitList")
                 }
             }
 
@@ -226,3 +243,5 @@ class UserCoreClass {
     }
 
 }
+
+

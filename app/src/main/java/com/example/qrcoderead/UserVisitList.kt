@@ -46,6 +46,7 @@ class VisitAdapter : RecyclerView.Adapter<VisitAdapter.ViewHolder>() {
 
         holder.tv_test.text = item.getData(InfoItem.시간)
 
+
     }
 
     fun replaceItems(items: MutableList<UserCoreClass>) {

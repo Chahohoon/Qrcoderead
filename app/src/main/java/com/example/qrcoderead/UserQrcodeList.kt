@@ -49,9 +49,9 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ListAdapter.ViewHolder, position: Int) {
         val item = items.get(position)
 
-        holder.tv_name2.text = item.getData(InfoItem.이름)
-        holder.tv_hp2.text = item.getData(InfoItem.번호)
-        holder.tv_memo2.text = item.getData(InfoItem.방명록)
+//        holder.tv_name2.text = item.getData(InfoItem.이름)
+//        holder.tv_hp2.text = item.getData(InfoItem.번호)
+//        holder.tv_memo2.text = item.getData(InfoItem.방명록)
 
     }
 
