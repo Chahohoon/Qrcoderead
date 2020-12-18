@@ -15,7 +15,7 @@
         android:layout_height="620dp"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="90dp"
-        app:layoutManager="LinearLayoutManager"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:context=".UserVisitList"
         tools:listitem="@layout/userqvisitlist_item" />
 

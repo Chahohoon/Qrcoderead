@@ -18,7 +18,6 @@ data class infolist(
     val name: String,
     val hp: String
 )
-@Serializable
 data class visitlist(
     val data: String,
     val div: String,
@@ -46,8 +45,6 @@ class UserCoreClass {
 
     var infoList = mutableMapOf<String, String>()
     var visitList = mutableMapOf<String, String>()
-
-
 
     //유저 정보 서버에 등록
     fun setUserDataPost(name: String, hp: String, data: String, dstamp: String) {
@@ -188,8 +185,6 @@ class UserCoreClass {
                             var ssite = result.getString("site")
                             var stime = result.getString("time")
 
-//                            visitlist(sdata, sdiv, sgps, ssite, stime)
-
                             visitList.put("data",sdata)
                             visitList.put("div",sdiv)
                             visitList.put("gps",sgps)
@@ -197,25 +192,17 @@ class UserCoreClass {
                             visitList.put("time",stime)
 
                         }
-//
-
-//
-//                        Log.d("getUserVisitList2", "$res")
-                        // data : , div : , gps : , site : , time :
-                        //{"data":"\ubc29\ubb38","div":"beauty","gps":"37.364809,127.107684","site":"THE_NINE","time":"20-10-29 10:37"}
-
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
-                    Log.d("getUserVisitList", "$visitList")
                 }
             }
-
         })
     }
 
     fun getData(info: InfoItem): String {
         return when(info) {
+
             InfoItem.방명록 -> {
                 infoList[InfoItem.방명록.name].toString()
             }
@@ -236,8 +223,9 @@ class UserCoreClass {
             }
             InfoItem.시간 -> {
                 visitList[InfoItem.시간.name].toString()
-            }
+                Log.d("time", "시간").toString()
 
+            }
             else -> {""}
         }
     }

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.vision.CameraSource
@@ -25,7 +26,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
     private lateinit var detector : BarcodeDetector
@@ -35,17 +36,35 @@ class MainActivity : AppCompatActivity() {
     var userdata = UserDataClass()
     var usercore = UserCoreClass()
 
-    var dCheckDisplay = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         onInitDataBase()
-        setMemo()
-        setChangeDisplay()
-
         setUserDataPost()
+//        setChangeDisplay()
+    }
+
+    override fun onClick(view: View) {
+        when (view.id){
+            /// 사용자 설정 화면 이동
+            R.id.btn_qrcode->{
+                startActivity(Intent(this, ScannerActivity::class.java))
+//                finish()
+            }
+
+            /// 파트너 접속 화면 이동
+            R.id.btn_qrcodelist->{
+                startActivity(Intent(this, UserQrcodeList::class.java))
+//                finish()
+            }
+
+            R.id.btn_visit->{
+                startActivity(Intent(this, UserVisitList::class.java))
+//                finish()
+            }
+        }
     }
 
     //realm 초기화
@@ -69,6 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     // 스캐너 시작
     fun ReadQrcode() {
+
         integrator.setCaptureActivity(ScannerActivity::class.java)
         integrator.initiateScan()
         integrator.setBeepEnabled(true) //인식 시 "삑" 소리 남
@@ -121,30 +141,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setChangeDisplay() {
-
         val intentUserList = Intent(this, UserQrcodeList::class.java)
         val intentUserVisit = Intent(this, UserVisitList::class.java)
 
         //스캐너 클릭
         btn_qrcode.setOnClickListener {
-            dCheckDisplay = 1
+            setMemo()
             ReadQrcode()
         }
 
         //
         btn_qrcodelist.setOnClickListener {
-            dCheckDisplay = 2
-//            intent.putExtra("data",userdata.data)
-//            intent.putExtra("dstamp",userdata.dstamp)
             startActivity(intentUserList)
 
         }
 
         //유저 방문리스트 확인
         btn_visit.setOnClickListener {
-            dCheckDisplay = 3
-//            intent.putExtra("data",userdata.data)
-//            intent.putExtra("dstamp",userdata.dstamp)
             startActivity(intentUserVisit)
         }
     }
