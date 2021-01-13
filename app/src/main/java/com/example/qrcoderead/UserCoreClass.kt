@@ -11,20 +11,19 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import com.example.qrcoderead.visitlist as visitlist
 
 data class infolist(
     val data: String,
     val name: String,
     val hp: String
 )
-data class visitlist(
-    val data: String,
-    val div: String,
-    val gps: String,
-    val site: String,
-    val time: String
-)
+//data class visitlist(
+//    val data: String,
+//    val div: String,
+//    val gps: String,
+//    val site: String,
+//    val time: String
+//)
 
 enum class InfoItem(name: String) {
     방명록("data"),
@@ -190,14 +189,17 @@ class UserCoreClass {
                             visitList.put("gps",sgps)
                             visitList.put("site",ssite)
                             visitList.put("time",stime)
-
+                            Log.d("test222", "$visitList")
+//                            visitlist(sdata,sdiv,sgps,ssite,stime)
                         }
+
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
                 }
             }
         })
+
     }
 
     fun getData(info: InfoItem): String {
@@ -223,10 +225,7 @@ class UserCoreClass {
             }
             InfoItem.시간 -> {
                 visitList[InfoItem.시간.name].toString()
-                Log.d("time", "시간").toString()
-
             }
-            else -> {""}
         }
     }
 

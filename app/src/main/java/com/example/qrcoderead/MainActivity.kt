@@ -5,25 +5,17 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.firebase.database.FirebaseDatabase
-import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.IOException
+
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -43,28 +35,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         onInitDataBase()
         setUserDataPost()
-//        setChangeDisplay()
-    }
-
-    override fun onClick(view: View) {
-        when (view.id){
-            /// 사용자 설정 화면 이동
-            R.id.btn_qrcode->{
-                startActivity(Intent(this, ScannerActivity::class.java))
-//                finish()
-            }
-
-            /// 파트너 접속 화면 이동
-            R.id.btn_qrcodelist->{
-                startActivity(Intent(this, UserQrcodeList::class.java))
-//                finish()
-            }
-
-            R.id.btn_visit->{
-                startActivity(Intent(this, UserVisitList::class.java))
-//                finish()
-            }
-        }
     }
 
     //realm 초기화
@@ -112,6 +82,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         })
 
+        //default
         if(userdata.data == "") {
             userdata.data = "방문"
         }
@@ -128,7 +99,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //DB 불러옴
     fun setUserDataPost() {
         onReadDataBase()
-        usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
     }
 
     // 파이어베이스 테스트 클래스
@@ -140,28 +110,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    fun setChangeDisplay() {
-        val intentUserList = Intent(this, UserQrcodeList::class.java)
-        val intentUserVisit = Intent(this, UserVisitList::class.java)
+    override fun onClick(v: View) {
+        when (v.id){
+            /// 사용자 설정 화면 이동
+             R.id.btn_qrcode-> {
+                integrator.setCaptureActivity(ScannerActivity::class.java)
+                integrator.initiateScan()
+                integrator.setBeepEnabled(true) //인식 시 "삑" 소리 남
+            }
 
-        //스캐너 클릭
-        btn_qrcode.setOnClickListener {
-            setMemo()
-            ReadQrcode()
-        }
+//            /// 파트너 접속 화면 이동
+            R.id.btn_qrcodelist-> {
+                startActivity(Intent(this, UserQrcodeList::class.java))
+            }
 
-        //
-        btn_qrcodelist.setOnClickListener {
-            startActivity(intentUserList)
-
-        }
-
-        //유저 방문리스트 확인
-        btn_visit.setOnClickListener {
-            startActivity(intentUserVisit)
+            R.id.btn_visit-> {
+                usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+                startActivity(Intent(this, UserVisitList::class.java))
+            }
         }
     }
-
     override fun onResume() {
         super.onResume()
         ed_memo.text?.clear()
@@ -184,6 +152,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
                 usercore.getUserDataList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+
 //                FirebaseDataWrite()
             }
         } else {
