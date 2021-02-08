@@ -17,6 +17,6 @@
         android:layout_marginBottom="90dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:context=".UserVisitList"
-        tools:listitem="@layout/userqvisitlist_item" />
+        tools:listitem="@layout/uservisitelist_item"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

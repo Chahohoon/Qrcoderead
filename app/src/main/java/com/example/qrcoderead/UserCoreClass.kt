@@ -39,7 +39,7 @@ class UserCoreClass {
 
     var userdata = UserDataClass()
     var userqrcodelist = UserQrcodeList()
-    val okHttpClient = OkHttpClient()
+//    val okHttpClient = OkHttpClient()
     var realm : Realm? = null
 
     var infoList = mutableMapOf<String, String>()
@@ -55,6 +55,7 @@ class UserCoreClass {
         userdata.dstamp = dstamp
 
         val url = "https://www.dstamp.kr/api/v1/userstamp"
+        val okHttpClient = OkHttpClient()
         val mediaType = "application/json;charset=utf-8".toMediaType()
         val json = Gson().toJson(userdata)
         val requestBody = json.toString().toRequestBody(mediaType)
@@ -92,7 +93,7 @@ class UserCoreClass {
         userdata.hp = hp
         userdata.data = data
         userdata.dstamp = dstamp
-
+        val okHttpClient = OkHttpClient()
         val url = "https://www.dstamp.kr/api/v1/sitestamp"
         val mediaType = "application/json;charset=utf-8".toMediaType()
         val json = Gson().toJson(userdata)
@@ -154,6 +155,7 @@ class UserCoreClass {
         userdata.dstamp = dstamp
 
         val url = "https://www.dstamp.kr/api/v1/usersite"
+        val okHttpClient = OkHttpClient()
         val mediaType = "application/json;charset=utf-8".toMediaType()
         val json = Gson().toJson(userdata)
         val requestBody = json.toString().toRequestBody(mediaType)
@@ -162,6 +164,7 @@ class UserCoreClass {
             .url(url)
             .post(requestBody)
             .build()
+
         okHttpClient.newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {
@@ -177,21 +180,25 @@ class UserCoreClass {
 
                         for (i in 0 until visitobj.length()) {
                             val result = visitobj.getJSONObject(i)
-
+                            Log.d("TEST", "$result")
                             var sdata = result.getString("data")
                             var sdiv = result.getString("div")
                             var sgps = result.getString("gps")
                             var ssite = result.getString("site")
                             var stime = result.getString("time")
 
-                            visitList.put("data",sdata)
-                            visitList.put("div",sdiv)
-                            visitList.put("gps",sgps)
-                            visitList.put("site",ssite)
-                            visitList.put("time",stime)
-                            Log.d("test222", "$visitList")
-//                            visitlist(sdata,sdiv,sgps,ssite,stime)
+                            visitList.put("data", sdata)
+                            visitList.put("div", sdiv)
+                            visitList.put("gps", sgps)
+                            visitList.put("site", ssite)
+                            visitList.put("time", stime)
+
                         }
+                        setData(visitList)
+                        Log.d("TEST2.1", "$visitobj")
+                        Log.d("TEST2", "$visitList")
+
+
 
                     } catch (e: JSONException) {
                         e.printStackTrace()
@@ -199,10 +206,19 @@ class UserCoreClass {
                 }
             }
         })
+    }
 
+    fun setData(ABC:MutableMap<String,String>) {
+        if(ABC.size != 0) {
+            visitList = ABC
+        }
+        Log.d("TEST3", "$visitList")
     }
 
     fun getData(info: InfoItem): String {
+
+        Log.d("TEST4", "$visitList")
+
         return when(info) {
 
             InfoItem.방명록 -> {
@@ -215,7 +231,7 @@ class UserCoreClass {
                 infoList[InfoItem.번호.name].toString()
             }
             InfoItem.가게명 -> {
-                visitList[InfoItem.가게명.name].toString()
+                visitList["div"].toString()
             }
             InfoItem.사이트 -> {
                 visitList[InfoItem.사이트.name].toString()
@@ -227,6 +243,7 @@ class UserCoreClass {
                 visitList[InfoItem.시간.name].toString()
             }
         }
+
     }
 
 }

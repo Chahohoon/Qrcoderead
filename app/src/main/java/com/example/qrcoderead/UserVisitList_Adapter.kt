@@ -30,6 +30,10 @@ class VisitAdapter: RecyclerView.Adapter<VisitAdapter.ViewHolder>() {
     override fun getItemCount(): Int {
       return items.size
     }
+    fun replaceItems(items: MutableList<UserCoreClass>) {
+        this.items = items
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView),
         LayoutContainer
