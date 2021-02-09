@@ -14,7 +14,7 @@ import androidx.core.widget.doOnTextChanged as doOnTextChanged
 
 class UserInfo : AppCompatActivity() {
 
-    var userdata = UserDataClass()
+    var userdata = UserData()
     var userdataload = UserDataLoadClass()
     var realm : Realm? = null
     var toast : Toast? = null

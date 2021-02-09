@@ -25,7 +25,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var cameraSource: CameraSource
     val integrator = IntentIntegrator(this)
     var realm : Realm? = null
-    var userdata = UserDataClass()
+    var userdata = UserData()
+    var userdataclass = UserDataClass()
     var usercore = UserCoreClass()
 
 
@@ -34,7 +35,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_main)
 
         onInitDataBase()
-        setUserDataPost()
     }
 
     //realm 초기화
@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
 
+        setUserDataPost()
     }
 
     // realm 읽어오기
@@ -54,6 +55,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                    userdata.hp = it.isnumber()
            }
         }
+
+
     }
 
     // 스캐너 시작
@@ -125,7 +128,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btn_visit-> {
-                usercore.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+                userdataclass.getUserVisitList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
                 startActivity(Intent(this, UserVisitList::class.java))
             }
         }
@@ -150,8 +153,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 //DB 불러옴
                 onReadDataBase()
 
-                usercore.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
-                usercore.getUserDataList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+                userdataclass.setUserDataPost(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
+                userdataclass.getUserDataList(userdata.name, userdata.hp, userdata.data, userdata.dstamp)
 
 //                FirebaseDataWrite()
             }
